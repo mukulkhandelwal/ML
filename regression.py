@@ -41,8 +41,8 @@ X = np.array(df.drop(['label'],1)) #features except label
  #scale the values
 
 X = preprocessing.scale(X)
-X = X[:-forecast_out]
 X_lately = X[-forecast_out:]
+#X = X[:-forecast_out:]
 
 #print(X)
 
@@ -65,20 +65,22 @@ print(forecast_set, accuracy,forecast_out)
 
 df['Forecast'] = np.nan
 
-last_date = df.ilox[-1].name
+last_date = df.iloc[-1].name
 last_unix = last_date.timestamp()
 one_day = 86400
 next_unix = last_unix + one_day
 
 
 for i in forecast_set:
-    next_date = datetime.datetime.fromtimestamp(next_unix)
+    next_date = datetime.fromtimestamp(next_unix)
     next_unix += one_day
     df.loc[next_date] = [np.nan for _ in range(len(df.columns)-1) ]+ [i]
+
 
 df['Adj. Close'].plot()
 df['Forecast'].plot()
 
 plt.legend(loc = 4)
 plt.xlabel('Date')
-plt.ylabel()
+plt.ylabel('Price')
+plt.show()
