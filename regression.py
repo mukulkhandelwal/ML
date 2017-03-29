@@ -9,7 +9,7 @@ from sklearn import preprocessing, cross_validation, svm
 from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 from matplotlib import style
-
+import pickle
 style.use('ggplot')
 
 quandl.ApiConfig.api_key = 'QM1RfC8UNPe6_AqSSde4'
@@ -41,8 +41,8 @@ X = np.array(df.drop(['label'],1)) #features except label
  #scale the values
 
 X = preprocessing.scale(X)
+#X = X[:forecast_out]
 X_lately = X[-forecast_out:]
-#X = X[:-forecast_out:]
 
 #print(X)
 
@@ -54,8 +54,16 @@ y = np.array(df['label'])
 
 X_train, X_test, y_train, y_test = cross_validation.train_test_split(X,y,test_size=0.2)
 
-clf = LinearRegression() #LinearRegression(n_jobs=10) 10 times training data  # or clf = svm.SVR() for svm or  clf = svm.SVR(kernel = 'poly)
-clf.fit(X_train, y_train)  #train
+# clf = LinearRegression() #LinearRegression(n_jobs=10) 10 times training data  # or clf = svm.SVR() for svm or  clf = svm.SVR(kernel = 'poly)
+#
+# clf.fit(X_train, y_train)  #train
+# with open('linearregression.pickle','wb') as f:
+#     pickle.dump(clf, f)
+
+
+#to save classifier and then read from a file to faster our process
+pickle_in = open('linearregression.pickle','rb')
+clf = pickle.load(pickle_in)
 accuracy = clf.score(X_test, y_test)  #test
 
 #print(accuracy)
