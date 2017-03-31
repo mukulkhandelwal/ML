@@ -22,14 +22,14 @@ df = df[['Adj. Open','Adj. High','Adj. Low','Adj. Close','Adj. Volume']]
 df['HL_PCT'] = (df['Adj. High'] - df['Adj. Close'])/df['Adj. Close'] *100.0
 
 df['PCT_change'] = (df['Adj. Close'] - df['Adj. Open'])/df['Adj. Open'] *100.0
-
+#           price       x           x               x
 df = df[['Adj. Close','HL_PCT','PCT_change','Adj. Volume']]
 #print(df)
 
 forecast_col = 'Adj. Close'
 df.fillna(-99999, inplace = True) #nan data
 
-forecast_out = int(math.ceil(0.01*len(df)))   #how many days in advance you want to print
+forecast_out = int(math.ceil(0.1*len(df)))   #how many days in advance you want to print
 
 
 #labels
@@ -41,8 +41,8 @@ X = np.array(df.drop(['label'],1)) #features except label
  #scale the values
 
 X = preprocessing.scale(X)
-#X = X[:forecast_out]
 X_lately = X[-forecast_out:]
+# X = X[:-forecast_out]
 
 #print(X)
 
