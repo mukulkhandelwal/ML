@@ -23,16 +23,32 @@ new_feature = [5,7]
 #
 #above can be do as
 
-# [[plt.scatter(ii[0], ii[1], s=100, color = i)for ii in dataset[i]] for i in dataset]
-# plt.scatter(new_feature[0], new_feature[1])
-# plt.show()
-
 def k_nearest_neighbors(data, predict, k=3):
-    if len(data) <= k :
-        warnings.warn(' K is set to a valye less than total voting groups !')
+    if len(data) >= k :
+        warnings.warn(' K is set to a value less than total voting groups !')
 
-    # knnalgos
-    # return vote_result
+    distances = []
+    for group in data:
+        for features in data[group]:
+            #euclidean_distance = np.sqrt(np.sum((np.array(features) - np.array(predict)) **2)) #same as euclidean distance but fast than that formula and can have more than 2 dimension
+            euclidean_distance = np.linalg.norm(np.array(features) - np.array(predict))  #same as above bcz it is faster
+            distances.append([euclidean_distance, group])
+
+    votes = [i[1] for i in sorted(distances)[:k]] #finding groups
+    print(Counter(votes).most_common(1))
+    #
+    # for i in sorted(distances)[:k]:  #same as above
+    #     i[i]
+
+    vote_result = Counter(votes).most_common(1)[0][0]  #1 means only numbers=1 common group we want  ,0 0 most common group and how many
+
+    return vote_result
 
 
+result = k_nearest_neighbors(dataset ,new_feature, k=3)
+print(result)
+
+[[plt.scatter(ii[0], ii[1], s=100, color = i)for ii in dataset[i]] for i in dataset]
+plt.scatter(new_feature[0], new_feature[1], color = result)
+plt.show()
 
