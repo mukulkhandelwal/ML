@@ -42,8 +42,9 @@ def k_nearest_neighbors(data, predict, k=3):
     #     i[i]
 
     vote_result = Counter(votes).most_common(1)[0][0]  #1 means only numbers=1 common group we want  ,0 0 most common group and how many
-
-    return vote_result
+    confidence = Counter(votes).most_common(1)[0][1] / k
+    #print(vote_result,confidence)
+    return vote_result, confidence
 
 
 # result = k_nearest_neighbors(dataset ,new_feature, k=3)
@@ -52,38 +53,43 @@ def k_nearest_neighbors(data, predict, k=3):
 # [[plt.scatter(ii[0], ii[1], s=100, color = i)for ii in dataset[i]] for i in dataset]
 # plt.scatter(new_feature[0], new_feature[1], color = result)
 # plt.show()
+accuracies = []
+for i in range(25):
+    df = pd.read_csv('breast-cancer-wisconsin.data')
+    df.replace('?',-99999,inplace = True)
 
-df = pd.read_csv('breast-cancer-wisconsin.data')
-df.replace('?',-99999,inplace = True)
+    df.drop(['id'],1,inplace = True)
+    #print(df.head())
+    full_data = df.astype(float).values.tolist()  #convert all to float there are some string thats why convert to float
+    #print(full_data[:5])
 
-df.drop(['id'],1,inplace = True)
-#print(df.head())
-full_data = df.astype(float).values.tolist()  #convert all to float there are some string thats why convert to float
-#print(full_data[:5])
+    random.shuffle(full_data)
+    #print(full_data[:5])
 
-random.shuffle(full_data)
-#print(full_data[:5])
-
-test_size = 0.2
-train_set = {2:[], 4:[]}
-test_set = {2:[], 4:[] }
-train_data = full_data[: -int(test_size*len(full_data))]
-test_data = full_data[-int(test_size*len(full_data)):] #last 20%
+    test_size = 0.2
+    train_set = {2:[], 4:[]}
+    test_set = {2:[], 4:[] }
+    train_data = full_data[: -int(test_size*len(full_data))]
+    test_data = full_data[-int(test_size*len(full_data)):] #last 20%
 
 
-for i in train_data:
-    train_set[i[-1]].append(i[:-1]) #-1 is last column which is class column
-for i in test_data:
-    test_set[i[-1]].append(i[:-1]) #-1 is last column which is class column
+    for i in train_data:
+        train_set[i[-1]].append(i[:-1]) #-1 is last column which is class column
+    for i in test_data:
+        test_set[i[-1]].append(i[:-1]) #-1 is last column which is class column
 
-correct = 0
-total = 0
+    correct = 0
+    total = 0
 
-for group in test_set:
-    for data in test_set[group]:
-        vote = k_nearest_neighbors(train_set, data, k=5)
-        if group == vote :
-            correct +=1
-        total+=1
+    for group in test_set:
+        for data in test_set[group]:
+            vote, confidence = k_nearest_neighbors(train_set, data, k=5)
+            if group == vote :
+                correct +=1
+            else:
+                print(confidence)
+            total+=1
 
-print('Accuracy: ', correct/total)
+    print('Accuracy: ', correct/total)
+    accuracies.append(correct/total)
+    print(sum(accuracies)/len(accuracies))
