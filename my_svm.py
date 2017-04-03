@@ -99,9 +99,23 @@ class Support_Vector_Machine :
         #sign( x.w + b )
         classification = np.sign(np.dot(np.array(features), self.w) + self.b )
 
+        if classification != 0 and self.visualization:
+            self.ax.scatter(features[0], features[1], s=100, marker ='*',c = self.colors[classification])
+
         return classification
 
 
+    def visualize(self):
+        [[self.ax.scatter(x[0],x[1],s=100, color = self.colors[i] ) for x in data_dict[i]] for i in data_dict]
+
+
+        #hyperplane = x.w + b
+        #v = x.w + b
+        #psv = 1
+        #nsv = -1
+        #dec = 0
+        def hyperplane(x,w,b,v):
+            return (-w[0]*x -b +v) / w[1]
 
 
 
