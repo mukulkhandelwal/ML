@@ -18,7 +18,7 @@ class Support_Vector_Machine :
         self.data = data#{ ||w|| : [w,b] }
         opt_dict = {}
 
-        transform = { [[1,1], [-1,1] [1,-1], [-1,-1]]}
+        transforms = { [[1,1], [-1,1] [1,-1], [-1,-1]]}
 
         all_data = []
         for yi in self.data:
@@ -30,6 +30,9 @@ class Support_Vector_Machine :
         self.min_feature_value = min(all_data)
         all_data = None
 
+        #support vectors yi(xi.w + b) =1
+        #
+
         #first big steps then after find give slow steps
         step_sizes = [self.max_feature_value * 0.1,
                       self.max_feature_value * 0.01,
@@ -38,7 +41,7 @@ class Support_Vector_Machine :
 
         #extremely expensive
         b_range_multiple = 5
-        #
+        # we dont need to take as small of steps with b as we do w
         b_multiple = 5
 
         latest_optimum = self.max_feature_value * 10
@@ -49,7 +52,45 @@ class Support_Vector_Machine :
             # we can fo this because convex
             optimized = False
             while not optimized:
-                pass
+                for b in np.arange(-1 * (self.max_feature_value * b_range_multiple),
+                                   self.max_feature_value * b_range_multiple,
+                                   step*b_range_multiple):
+                    for tranformation in transforms:
+                        w_t =  w*tranformation
+                        found_option = True
+                        #weakest link in the SVM fundamentally
+                        #SMO attempts to fix this a bit
+                        #yi(xi.w+b) >= 1
+                        ## add a break later..
+                        for i in self.data:
+                            for xi in self.data[i]:
+                                yi = i
+                                if not yi * (np.dot(w_t,xi)+b) >=1:
+                                    found_option = False
+
+                        if found_option:
+                            opt_dict[np.linalg.norm(w_t)] #magnititude of vector
+
+
+
+
+                if w[0] < 0 :
+                    optimized = True
+                    print('Optimized Step')
+                else:
+                    # w = [5,5]
+                    #step = 1
+                    #w - step = w-[step,step]=[4,4]
+                    w = w - step
+
+            norms = sorted([n for n in opt_dict])
+            opt_choice = opt_dict[norms[0]]
+            #||w|| : [w , b]
+            self.w = opt_choice[0]
+            self.b = opt_choice[1]
+            latest_optimum = opt_choice[0][0] + step *2
+
+
 
 
 
