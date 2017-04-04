@@ -6,10 +6,11 @@ import numpy as np
 from sklearn.cluster import KMeans
 
 
-X = np.array( [ [1,2],[1.5,1.8],[5,8],[8,8],[1,0.5],[9,11]])
+X = np.array( [ [1,2],[1.5,1.8],[5,8],[8,8],[1,0.5],[9,11],
+                [1,3],[8,9],[5,4],[6,4],[0,3]])
 #
 plt.scatter(X[:,0],X[:,1], s=150, linewidths=5)
-plt.show()
+#plt.show()
 
 # clf = KMeans(n_clusters=2)
 # clf.fit(X)
@@ -17,7 +18,7 @@ plt.show()
 # centroids = clf.cluster_centers_
 # labels = clf.labels_
 
-colors = ["g","r","c","b","k","o"]
+colors = 10 * ["g","r","c","b","k","o"]
 
 # for i in range(len(X)):
 #     plt.plot(X[i][0],X[i][1], colors[labels[i]], markersize = 10)  # labels 2 so green or red
@@ -48,7 +49,7 @@ class K_Means:
                 self.classifications[i] = []
 
 
-            for featureset in X:  #X is as data
+            for featureset in data:  # data
                 distances = [np.linalg.norm(featureset - self.centroids[centroid]) for centroid in self.centroids]
                 classification = distances.index(min(distances)) #finding index
                 self.classifications[classification].append(featureset)
@@ -58,15 +59,54 @@ class K_Means:
 
 
             for classification in self.classifications:
-                pass
+                #pass
                 self.centroids[classification] = np.average(self.classifications[classification], axis=0)
 
+            optimized = True
+
+            for c in self.centroids:
+                original_centroid = prev_centroids[c]
+                current_centroid = self.centroids[c]
+
+                if np.sum((current_centroid - original_centroid)/original_centroid *100 > self.tol):
+                    print(np.sum((current_centroid - original_centroid)/original_centroid *100  ))
+                    optimized = False
+
+                if optimized:
+                    break
 
 
 
 
     def predict(self,data):
-        pass
+        distances = [np.linalg.norm(data - self.centroids[centroid]) for centroid in self.centroids]
+        classification = distances.index(min(distances))  # finding index
+        return  classification
 
 
+
+clf = K_Means()
+clf.fit(X)
+
+for centroid in clf.centroids:
+    plt.scatter(clf.centroids[centroid][0], clf.centroids[centroid][1],
+                marker ="o", color="k", s=150, linewidths=5)
+
+
+
+# for classification in clf.classifications:
+#     color = colors[classification]
+#
+#     for featureset in clf.classifications[classification]:
+#         plt.scatter(featureset[0], featureset[1], marker="x",color=color, s=150, linewidths=5)
+#
+#
+# unknowns = np.array([[1,3],[8,9],[5,4],[6,4],[0,3]])
+#
+# for unknown in unknowns:
+#     classification = clf.predict(unknown)
+#     plt.scatter(unknown[0],unknown[1], marker= "*",color = colors[classification] , s = 150,linewidths=5)
+#
+
+plt.show()
 
