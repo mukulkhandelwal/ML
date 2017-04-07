@@ -41,7 +41,8 @@ def create_lexicon(pos,neg):
 		if 1000 > w_counts[w] > 50 : #we dont want supercommon word like "the is and" thats why <1000 
 			l2.append(w)
 
-	print(len(l2)
+	print(len(l2))
+	
 	return l2
 
 
@@ -74,7 +75,7 @@ def sample_handling(sample, lexicon, classification):
 
 
 
-def create_feature_set_and_labels(pos,neg,test_size=0.1):
+def create_feature_sets_and_labels(pos,neg,test_size=0.1):
 	lexicon = create_lexicon(pos,neg)
 	features = []
 	features += sample_handling('pos.txt',lexicon,[1,0])
@@ -106,7 +107,7 @@ def create_feature_set_and_labels(pos,neg,test_size=0.1):
 
 
 if __name__ == '__main__':
-	train_x,train_y,test_x,test_y = create_feature_set_and_labels('pos.txt','neg.txt')
+	train_x,train_y,test_x,test_y = create_feature_sets_and_labels('pos.txt','neg.txt')
 
 	with open('sentiment_set.pickle','wb') as f:
 		pickle.dump([train_x,train_y,test_x,test_y], f)
